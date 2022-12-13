@@ -72,9 +72,11 @@ public class UnitObject : MonoBehaviour
         manager.AddUnit(this, isPlayer);
 
         InvokeRepeating("Scan", 1f, 1f);
+
+        pather.destination = transform.position;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         AngleUnitToFloor();
         RotateToClosestEnemy();
@@ -281,7 +283,7 @@ public class UnitObject : MonoBehaviour
         }
     }
 
-    public void SetTargetLocation(Vector3 target)
+    public virtual void SetTargetLocation(Vector3 target)
     {
         pather.destination = target;
     }

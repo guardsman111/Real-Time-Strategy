@@ -23,6 +23,8 @@ public class AmmoPiece : MonoBehaviour
     private UnitWeapon weapon;
     private UnitObject target;
 
+    [SerializeField] private GameObject impactEffect;
+
     protected bool spent, willHit;
     protected float maxTimer, startTimer;
 
@@ -83,6 +85,7 @@ public class AmmoPiece : MonoBehaviour
                 {
                     hit.collider.GetComponent<UnitObject>().RegisterHit(this, hit);
                 }
+                SpawnImpact(hit);
                 KillAmmo();
             }
         }
@@ -101,5 +104,10 @@ public class AmmoPiece : MonoBehaviour
         }
 
         Destroy(this.gameObject);
+    }
+
+    private void SpawnImpact(RaycastHit hitInfo)
+    {
+        GameObject impact = Instantiate(impactEffect, hitInfo.point, this.transform.rotation);
     }
 }

@@ -28,6 +28,8 @@ public class WeaponMissile : AmmoPiece
 
             Debug.Log($"Locked loss time is {lockedLossTime} seconds after launch, with max range of {maxTimer}");
         }
+
+        maxTimer = range / speed;
     }
 
     private new void Update()

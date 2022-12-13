@@ -260,3 +260,4 @@ MonoBehaviour:
   maxPenetration: 700
   kineticPenetrator: 1
   tracking: 0
+  impactEffect: {fileID: 8098739957166863280, guid: 57c7faa88b9181a489ffc87b986d6e39, type: 3}

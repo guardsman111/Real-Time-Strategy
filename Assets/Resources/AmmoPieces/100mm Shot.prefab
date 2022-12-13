@@ -120,6 +120,7 @@ MonoBehaviour:
   maxPenetration: 400
   kineticPenetrator: 1
   tracking: 0
+  impactEffect: {fileID: 7324146200123359535, guid: c084b0d4eb31ea441995594b1e331a18, type: 3}
 --- !u!1 &3381938115606154058
 GameObject:
   m_ObjectHideFlags: 0

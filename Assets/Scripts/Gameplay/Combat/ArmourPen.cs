@@ -19,7 +19,7 @@ public static class ArmourPen
 
         float relativeThickness = armourThickness + (armourThickness * (thicknessIncrease * 1.5f));
 
-        Debug.Log($"{armourThickness} armour thickness, {relativeThickness} relative Thickness from angle {angle} and hitAngle {hitAngle} and multiplier {thicknessIncrease} against {penetration} penetration");
+        //Debug.Log($"{armourThickness} armour thickness, {relativeThickness} relative Thickness from angle {angle} and hitAngle {hitAngle} and multiplier {thicknessIncrease} against {penetration} penetration");
         if (relativeThickness < penetration)
         {
             return true;

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4227777740862738375}
   - component: {fileID: 8454697782034390847}
   - component: {fileID: 2822879903655166469}
+  - component: {fileID: -5496147295747280152}
   m_Layer: 0
   m_Name: Kinetic Impact
   m_TagString: Untagged
@@ -41,7 +42,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8098739957166863280}
   serializedVersion: 8
-  lengthInSec: 0.5
+  lengthInSec: 0.75
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -116,7 +117,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.75
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -977,7 +978,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 10
+        scalar: 15
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -4879,3 +4880,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-5496147295747280152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8098739957166863280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e57ea2307706db4e9a07f9e65d6cc9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 0.75

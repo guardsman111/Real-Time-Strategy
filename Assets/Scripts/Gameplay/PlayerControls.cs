@@ -11,6 +11,8 @@ public class PlayerControls : MonoBehaviour
 
     [SerializeField] private LayerMask mask;
 
+    private bool reverseSelected = false;
+
     public void Initialize(Dictionary<int, UnitObject> PlayerUnits, UnitManager Manager)
     {
         playerUnits = PlayerUnits;
@@ -64,6 +66,43 @@ public class PlayerControls : MonoBehaviour
                         unit.SetTargetLocation(hit.point);
                     }
                 }
+            }
+
+            reverseSelected = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (reverseSelected == false)
+            {
+                foreach (UnitObject unit in selectedUnits)
+                {
+                    UnitVehicle vehicle = unit.GetComponent<UnitVehicle>();
+                    if (vehicle != null)
+                    {
+                        if (vehicle.cantReverse == false)
+                        {
+                            vehicle.ReadyReverse(true);
+                        }
+                    }
+                }
+
+                reverseSelected = true;
+                return;
+            }
+
+            foreach (UnitObject unit in selectedUnits)
+            {
+                UnitVehicle vehicle = unit.GetComponent<UnitVehicle>();
+                if (vehicle != null)
+                {
+                    if (vehicle.cantReverse == false)
+                    {
+                        vehicle.ReadyReverse(false);
+                    }
+                }
+
+                reverseSelected = false;
             }
         }
     }

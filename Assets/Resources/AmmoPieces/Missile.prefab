@@ -121,7 +121,8 @@ MonoBehaviour:
   maxPenetration: 600
   kineticPenetrator: 0
   tracking: 1
-  loseLockChance: 80
+  impactEffect: {fileID: 7324146200123359535, guid: c084b0d4eb31ea441995594b1e331a18, type: 3}
+  loseLockChance: 20
   lockedLossTime: 0
 --- !u!1 &4342998870379779283
 GameObject:

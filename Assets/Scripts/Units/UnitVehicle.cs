@@ -6,6 +6,39 @@ using UnityEngine;
 public class UnitVehicle : UnitObject
 {
     public List<ParticleSystem> Fires;
+    [SerializeField] private bool reverseSelected = false;
+    [SerializeField] private bool isReversing = false;
+    public bool cantReverse { get; protected set; } = false;
+
+    protected override void Update()
+    {
+        base.Update();
+        if(isReversing == true)
+        {
+            FaceAwayFromDestination();
+
+
+            return;
+        }
+    }
+
+    private void FaceAwayFromDestination()
+    {
+        Vector3 targetPos = pather.destination;
+        targetPos.y = transform.position.y;
+        Vector3 targetDirection = (targetPos - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(-targetDirection);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Stats.traverseSpeed * Time.deltaTime);
+        transform.localEulerAngles = new Vector3(0, transform.localRotation.eulerAngles.y, 0);
+    }
+
+    private void CheckCompletedPath()
+    {
+        if(pather.reachedDestination == true)
+        {
+            Reverse(false);
+        }
+    }
 
     // Can explode if it's a vehicle
     public override void TakeDamage(int damage)
@@ -47,5 +80,31 @@ public class UnitVehicle : UnitObject
         }
 
         Die();
+    }
+
+    public override void SetTargetLocation(Vector3 target)
+    {
+        base.SetTargetLocation(target);
+        Reverse(reverseSelected);
+        ReadyReverse(false);
+    }
+
+    public void ReadyReverse(bool isReady)
+    {
+        reverseSelected = isReady;
+    }
+
+    public void Reverse(bool active)
+    {
+        pather.enableRotation = !active;
+        isReversing = active;
+        if(active == true)
+        {
+            pather.maxSpeed = Stats.driveSpeed / 2;
+            InvokeRepeating("CheckCompletePath", 0.2f, 0.2f);
+            return;
+        }
+
+        pather.maxSpeed = Stats.driveSpeed;
     }
 }
