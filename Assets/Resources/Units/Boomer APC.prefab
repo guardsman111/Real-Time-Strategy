@@ -19947,7 +19947,7 @@ GameObject:
   - component: {fileID: 8590151489695321489}
   - component: {fileID: 7706852815532921866}
   - component: {fileID: 4157303498294261684}
-  - component: {fileID: 4157303498294261683}
+  - component: {fileID: 8436615787228803656}
   - component: {fileID: 4157303498294261682}
   m_Layer: 0
   m_Name: Turret
@@ -20036,7 +20036,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 6922034759042726263}
---- !u!114 &4157303498294261683
+--- !u!114 &8436615787228803656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20045,20 +20045,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 6536115641504037519}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3eba98dd9417a145b17865d87070a15, type: 3}
+  m_Script: {fileID: 11500000, guid: 73f3ce2d8da83014eb1bdaff62a4c8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 6922034759042726263}
   stats:
     range: 900
-    rotationSpeed: 35
-    ammo: 30
-    ammoSpeed: 180
-    roundsPerMinute: 30
+    rotationSpeed: 60
+    ammo: 11
+    ammoSpeed: 200
+    roundsPerMinute: 120
     aimTime: 0
     maxGunDown: 0
     maxGunUp: 0
-    instability: 1
+    instability: 0.5
     isTurreted: 1
     isFixed: 0
     removable: 1
@@ -20071,7 +20071,10 @@ MonoBehaviour:
   previousTargetPosition: {x: 0, y: 0, z: 0}
   predictedTargetPosition: {fileID: 0}
   ammoCount: 0
-  limitedAmmo: 1
+  limitedAmmo: 0
+  magazineSize: 5
+  magazineFill: 0
+  magazineReloadTime: 15
 --- !u!64 &4157303498294261682
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -25062,7 +25065,7 @@ MonoBehaviour:
   model: {fileID: 7841162921069799540}
   pather: {fileID: 7841162919662675931}
   weapons:
-  - {fileID: 4157303498294261683}
+  - {fileID: 8436615787228803656}
   - {fileID: 7841162920652179646}
   stats:
     leaderName: Boris
@@ -25087,6 +25090,8 @@ MonoBehaviour:
     m_Bits: 256
   Fires:
   - {fileID: 1857931060984332678}
+  reverseSelected: 0
+  isReversing: 0
 --- !u!1 &7740446328770815406
 GameObject:
   m_ObjectHideFlags: 0

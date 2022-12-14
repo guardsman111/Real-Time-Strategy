@@ -23,13 +23,13 @@ public class UnitWeapon : MonoBehaviour
     public UnitObject TargetUnit { get => targetUnit; }
     private bool isShooting;
 
-    [SerializeField] private int ammoCount;
+    [SerializeField] protected int ammoCount;
 
     [SerializeField] private bool limitedAmmo = true;
     public bool LimitedAmmo { get => limitedAmmo; }
-    private bool isLoading;
+    protected bool isLoading;
 
-    private void Start()
+    protected virtual void Start()
     {
         ammoCount = stats.ammo;
     }
@@ -185,7 +185,7 @@ public class UnitWeapon : MonoBehaviour
         }
     }
 
-    private void Fire()
+    protected virtual void Fire()
     {
         if (isLoading == false)
         {
@@ -204,7 +204,6 @@ public class UnitWeapon : MonoBehaviour
 
                     Load();
 
-                    ammoCount -= 1;
                     if (limitedAmmo == true || unit.LimitAmmoUse == true)
                     {
                         firedAmmo = shotAmmo;
@@ -214,10 +213,11 @@ public class UnitWeapon : MonoBehaviour
         }
     }
 
-    private void Load()
+    protected virtual void Load()
     {
         isLoading = true;
         Invoke("Loaded", 60f / (float) Stats.roundsPerMinute);
+        ammoCount -= 1;
     }
 
     private void Loaded()
