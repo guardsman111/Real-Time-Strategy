@@ -230,7 +230,7 @@ public class UnitWeapon : MonoBehaviour
         if(ammoHalfReadyRack > 0)
         {
             Invoke("Loaded", 60f / ((float)Stats.roundsPerMinute / 2));
-            ammoReadyRack -= 1;
+            ammoHalfReadyRack -= 1;
             return;
         }
 

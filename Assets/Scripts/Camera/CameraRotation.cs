@@ -70,18 +70,17 @@ public class CameraRotation : MonoBehaviour
             screenX = Input.mousePosition.x - pressedPosition.x;
             screenY = Input.mousePosition.y - pressedPosition.y;
             float screenXPos = 0;
-            float screenYPos = 0;
 
             if (screenX > 6)
             {
                 rotationYValue = 1;
-                screenXPos = screenX - 6;
+                screenXPos = screenX;
                 pressedPosition = Input.mousePosition;
             }
             else if (screenX < -6)
             {
                 rotationYValue = -1;
-                screenXPos = -screenX - 6;
+                screenXPos = -screenX;
                 pressedPosition = Input.mousePosition;
             }
             else
@@ -91,13 +90,11 @@ public class CameraRotation : MonoBehaviour
             if (screenY > 3)
             {
                 rotationXValue = -1 + ((100 - screenY) / 100);
-                screenYPos = screenY;
                 pressedPosition = Input.mousePosition;
             }
             else if (screenY < -3)
             {
                 rotationXValue = 1 - ((100 - -screenY) / 100);
-                screenYPos = -screenY;
                 pressedPosition = Input.mousePosition;
             }
             else
