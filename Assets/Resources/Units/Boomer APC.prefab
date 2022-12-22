@@ -20052,7 +20052,10 @@ MonoBehaviour:
   stats:
     range: 900
     rotationSpeed: 60
-    ammo: 11
+    ammoTotal: 15
+    readyRack: 0
+    halfReadyRack: 0
+    rackRoundsPerMinute: 0
     ammoSpeed: 200
     roundsPerMinute: 120
     aimTime: 0
@@ -20071,6 +20074,8 @@ MonoBehaviour:
   previousTargetPosition: {x: 0, y: 0, z: 0}
   predictedTargetPosition: {fileID: 0}
   ammoCount: 0
+  ammoReadyRack: 0
+  ammoHalfReadyRack: 0
   limitedAmmo: 0
   magazineSize: 5
   magazineFill: 0
@@ -30680,7 +30685,10 @@ MonoBehaviour:
   stats:
     range: 1250
     rotationSpeed: 35
-    ammo: 4
+    ammoTotal: 4
+    readyRack: 0
+    halfReadyRack: 0
+    rackRoundsPerMinute: 0
     ammoSpeed: 100
     roundsPerMinute: 4
     aimTime: 1
@@ -30699,4 +30707,6 @@ MonoBehaviour:
   previousTargetPosition: {x: 0, y: 0, z: 0}
   predictedTargetPosition: {fileID: 0}
   ammoCount: 0
+  ammoReadyRack: 0
+  ammoHalfReadyRack: 0
   limitedAmmo: 1

@@ -376,7 +376,10 @@ MonoBehaviour:
   stats:
     range: 1500
     rotationSpeed: 50
-    ammo: 45
+    ammoTotal: 54
+    readyRack: 12
+    halfReadyRack: 12
+    rackRoundsPerMinute: 8
     ammoSpeed: 200
     roundsPerMinute: 15
     aimTime: 1
@@ -395,6 +398,8 @@ MonoBehaviour:
   previousTargetPosition: {x: 0, y: 0, z: 0}
   predictedTargetPosition: {fileID: 0}
   ammoCount: 0
+  ammoReadyRack: 0
+  ammoHalfReadyRack: 0
   limitedAmmo: 0
 --- !u!114 &2566685240476409459
 MonoBehaviour:

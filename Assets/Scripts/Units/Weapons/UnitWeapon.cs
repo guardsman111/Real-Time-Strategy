@@ -24,6 +24,8 @@ public class UnitWeapon : MonoBehaviour
     private bool isShooting;
 
     [SerializeField] protected int ammoCount;
+    [SerializeField] protected int ammoReadyRack;
+    [SerializeField] protected int ammoHalfReadyRack;
 
     [SerializeField] private bool limitedAmmo = true;
     public bool LimitedAmmo { get => limitedAmmo; }
@@ -31,7 +33,9 @@ public class UnitWeapon : MonoBehaviour
 
     protected virtual void Start()
     {
-        ammoCount = stats.ammo;
+        ammoReadyRack = stats.readyRack;
+        ammoHalfReadyRack = stats.halfReadyRack;
+        ammoCount = stats.ammoTotal - (ammoReadyRack + ammoHalfReadyRack);
     }
 
     protected void Update()
@@ -169,10 +173,12 @@ public class UnitWeapon : MonoBehaviour
             if (targetUnit != null)
             {
                 target = nTarget.transform;
+                CancelInvoke("StockRacks");
                 return;
             }
 
             target = null;
+            InvokeRepeating("StockRacks", 60f / (float)Stats.rackRoundsPerMinute, 60f / (float)Stats.rackRoundsPerMinute);
         }
     }
 
@@ -189,25 +195,22 @@ public class UnitWeapon : MonoBehaviour
     {
         if (isLoading == false)
         {
-            if (ammoCount != 0)
+            if (isShooting == true)
             {
-                if (isShooting == true)
+                GameObject shot = Instantiate(ammoPrefab, muzzel.position, muzzel.rotation);
+                if (flash != null)
                 {
-                    GameObject shot = Instantiate(ammoPrefab, muzzel.position, muzzel.rotation);
-                    if (flash != null)
-                    {
-                        flash.Play();
-                    }
-                    shot.transform.parent = null;
-                    AmmoPiece shotAmmo = shot.GetComponent<AmmoPiece>();
-                    shotAmmo.Fired(Stats.range, Stats.ammoSpeed, muzzel.position, unit, this, targetUnit);
+                    flash.Play();
+                }
+                shot.transform.parent = null;
+                AmmoPiece shotAmmo = shot.GetComponent<AmmoPiece>();
+                shotAmmo.Fired(Stats.range, Stats.ammoSpeed, muzzel.position, unit, this, targetUnit);
 
-                    Load();
+                Load();
 
-                    if (limitedAmmo == true || unit.LimitAmmoUse == true)
-                    {
-                        firedAmmo = shotAmmo;
-                    }
+                if (limitedAmmo == true || unit.LimitAmmoUse == true)
+                {
+                    firedAmmo = shotAmmo;
                 }
             }
         }
@@ -216,8 +219,36 @@ public class UnitWeapon : MonoBehaviour
     protected virtual void Load()
     {
         isLoading = true;
-        Invoke("Loaded", 60f / (float) Stats.roundsPerMinute);
-        ammoCount -= 1;
+
+        if (ammoReadyRack > 0)
+        {
+            Invoke("Loaded", 60f / (float)Stats.roundsPerMinute);
+            ammoReadyRack -= 1;
+            return;
+        }
+
+        if(ammoHalfReadyRack > 0)
+        {
+            Invoke("Loaded", 60f / ((float)Stats.roundsPerMinute / 2));
+            ammoReadyRack -= 1;
+            return;
+        }
+
+        if (ammoCount > 0)
+        {
+            if (Stats.readyRack == 0)
+            {
+                Invoke("Loaded", 60f / (float)Stats.roundsPerMinute);
+                ammoCount -= 1;
+                return;
+            }
+
+            Invoke("Loaded", 60f / ((float)Stats.roundsPerMinute / 4));
+            ammoCount -= 1;
+            return;
+        }
+
+        Debug.Log("Out of ammo so cannot load");
     }
 
     private void Loaded()
@@ -225,10 +256,6 @@ public class UnitWeapon : MonoBehaviour
         isLoading = false;
         if(isShooting == true)
         {
-            if (name == "Launchers")
-            {
-                Debug.Log("Launcher Reloaded");
-            }
             if ((limitedAmmo == true || unit.LimitAmmoUse == true) && firedAmmo != null)
             {
                 return;
@@ -236,6 +263,62 @@ public class UnitWeapon : MonoBehaviour
 
             Invoke("Fire", Stats.aimTime);
         }
+    }
+
+    protected void StockRacks()
+    {
+        Debug.Log("Stocking Racks");
+
+        if(ammoReadyRack == Stats.readyRack && ammoHalfReadyRack == Stats.halfReadyRack)
+        {
+            CancelInvoke("StockRacks");
+            return;
+        }
+
+        if (ammoCount == 0)
+        {
+            if(ammoReadyRack != Stats.readyRack && ammoHalfReadyRack != 0)
+            {
+                ammoReadyRack += 1;
+                ammoHalfReadyRack -= 1;
+                return;
+            }
+
+            CancelInvoke("StockRacks");
+            return;
+        }
+
+        if(ammoReadyRack != Stats.readyRack)
+        {
+            ammoReadyRack += 1;
+            ammoCount -= 1;
+            return;
+        }
+
+        if (ammoHalfReadyRack != Stats.halfReadyRack)
+        {
+            ammoHalfReadyRack += 1;
+            ammoCount -= 1;
+            return;
+        }
+    }
+
+    private bool CheckAmmo()
+    {
+        if(stats.readyRack == 0 && stats.halfReadyRack == 0)
+        {
+            if(ammoCount > 0)
+            {
+                return true;
+            }
+        }
+
+        if(ammoReadyRack > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public virtual void RemoveShot()

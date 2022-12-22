@@ -193,7 +193,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2566685240476409461, guid: 0d8a346973a80ff4483e55873d194c7f, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2566685240476409461, guid: 0d8a346973a80ff4483e55873d194c7f, type: 3}
+      propertyPath: stats.ammoTotal
+      value: 54
       objectReference: {fileID: 0}
     - target: {fileID: 2875033006109954574, guid: 0d8a346973a80ff4483e55873d194c7f, type: 3}
       propertyPath: m_RootOrder

@@ -75,13 +75,13 @@ public class CameraRotation : MonoBehaviour
             if (screenX > 6)
             {
                 rotationYValue = 1;
-                screenXPos = screenX;
+                screenXPos = screenX - 6;
                 pressedPosition = Input.mousePosition;
             }
             else if (screenX < -6)
             {
                 rotationYValue = -1;
-                screenXPos = -screenX;
+                screenXPos = -screenX - 6;
                 pressedPosition = Input.mousePosition;
             }
             else
@@ -90,13 +90,13 @@ public class CameraRotation : MonoBehaviour
             }
             if (screenY > 3)
             {
-                rotationXValue = -1;
+                rotationXValue = -1 + ((100 - screenY) / 100);
                 screenYPos = screenY;
                 pressedPosition = Input.mousePosition;
             }
             else if (screenY < -3)
             {
-                rotationXValue = 1;
+                rotationXValue = 1 - ((100 - -screenY) / 100);
                 screenYPos = -screenY;
                 pressedPosition = Input.mousePosition;
             }

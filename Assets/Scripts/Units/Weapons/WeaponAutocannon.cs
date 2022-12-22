@@ -24,13 +24,39 @@ public class WeaponAutocannon : UnitWeapon
             return;
         }
 
-        Invoke("MagazineLoad", magazineReloadTime);
+        if (ammoReadyRack > 0)
+        {
+            ammoReadyRack -= 1;
+            Invoke("MagazineLoad", magazineReloadTime);
+            return;
+        }
+
+        if (ammoHalfReadyRack > 0)
+        {
+            ammoHalfReadyRack -= 1;
+            Invoke("MagazineLoad", magazineReloadTime / 2);
+            return;
+        }
+
+        if (ammoCount > 0)
+        {
+            if (Stats.readyRack == 0)
+            {
+                Invoke("MagazineLoad", magazineReloadTime);
+                ammoCount -= 1;
+                return;
+            }
+
+            Invoke("MagazineLoad", magazineReloadTime / 4);
+            ammoCount -= 1;
+        }
+
+        Debug.Log("Out of ammo so cannot load");
     }
 
     private void MagazineLoad()
     {
         magazineFill = magazineSize;
         Load();
-        ammoCount -= 1;
     }
 }
