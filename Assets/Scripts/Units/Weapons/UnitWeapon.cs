@@ -247,8 +247,6 @@ public class UnitWeapon : MonoBehaviour
             ammoCount -= 1;
             return;
         }
-
-        Debug.Log("Out of ammo so cannot load");
     }
 
     private void Loaded()
@@ -265,41 +263,35 @@ public class UnitWeapon : MonoBehaviour
         }
     }
 
-    protected void StockRacks()
+    protected IEnumerator StockRacks()
     {
-        Debug.Log("Stocking Racks");
-
-        if(ammoReadyRack == Stats.readyRack && ammoHalfReadyRack == Stats.halfReadyRack)
+        while(ammoReadyRack < Stats.readyRack && ammoHalfReadyRack < Stats.halfReadyRack)
         {
-            CancelInvoke("StockRacks");
-            return;
-        }
-
-        if (ammoCount == 0)
-        {
-            if(ammoReadyRack != Stats.readyRack && ammoHalfReadyRack != 0)
+            if (ammoCount > 0)
             {
-                ammoReadyRack += 1;
-                ammoHalfReadyRack -= 1;
-                return;
+                yield return new WaitForSeconds(60f / ((float)Stats.rackRoundsPerMinute / 2));
+
+                if (ammoReadyRack != Stats.readyRack)
+                {
+                    ammoReadyRack += 1;
+                    ammoCount -= 1;
+                    continue;
+                }
+
+                if (ammoHalfReadyRack != Stats.halfReadyRack)
+                {
+                    ammoHalfReadyRack += 1;
+                    ammoCount -= 1;
+                    continue;
+                }
             }
 
-            CancelInvoke("StockRacks");
-            return;
-        }
-
-        if(ammoReadyRack != Stats.readyRack)
-        {
-            ammoReadyRack += 1;
-            ammoCount -= 1;
-            return;
-        }
-
-        if (ammoHalfReadyRack != Stats.halfReadyRack)
-        {
-            ammoHalfReadyRack += 1;
-            ammoCount -= 1;
-            return;
+            if (ammoReadyRack != Stats.readyRack && ammoHalfReadyRack > 0)
+            {
+                yield return new WaitForSeconds(60f / (float)Stats.rackRoundsPerMinute);
+                ammoReadyRack += 1;
+                ammoHalfReadyRack -= 1;
+            }
         }
     }
 
