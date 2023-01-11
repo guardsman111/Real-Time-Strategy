@@ -21,7 +21,7 @@ public class UnitWeapon : MonoBehaviour
     [SerializeField] private Transform predictedTargetPosition;
     private UnitObject targetUnit;
     public UnitObject TargetUnit { get => targetUnit; }
-    private bool isShooting;
+    private bool isShooting, isFiring;
 
     [SerializeField] protected int ammoCount;
     [SerializeField] protected int ammoReadyRack;
@@ -30,6 +30,7 @@ public class UnitWeapon : MonoBehaviour
     [SerializeField] private bool limitedAmmo = true;
     public bool LimitedAmmo { get => limitedAmmo; }
     protected bool isLoading;
+    private Coroutine stockRacks;
 
     protected virtual void Start()
     {
@@ -68,18 +69,27 @@ public class UnitWeapon : MonoBehaviour
                     }
                     if (Vector3.Distance(transform.position, target.position) > Stats.range)
                     {
-                        CancelInvoke("Fire");
+                        if (isFiring)
+                        {
+                            StopCoroutine(Fire());
+                        }
                         isShooting = false;
                     }
                     return;
                 }
 
-                CancelInvoke("Fire");
+                if (isFiring)
+                {
+                    StopCoroutine(Fire());
+                }
                 isShooting = false;
                 return;
             }
 
-            CancelInvoke("Fire");
+            if (isFiring)
+            {
+                StopCoroutine(Fire());
+            }
 
             Quaternion targetRotation = Quaternion.LookRotation(unit.transform.forward);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Stats.rotationSpeed * Time.deltaTime);
@@ -173,12 +183,15 @@ public class UnitWeapon : MonoBehaviour
             if (targetUnit != null)
             {
                 target = nTarget.transform;
-                CancelInvoke("StockRacks");
+
+                if(stockRacks != null)
+                    StopCoroutine(stockRacks);
+
                 return;
             }
 
             target = null;
-            InvokeRepeating("StockRacks", 60f / (float)Stats.rackRoundsPerMinute, 60f / (float)Stats.rackRoundsPerMinute);
+            stockRacks = StartCoroutine(StockRacks());
         }
     }
 
@@ -186,13 +199,25 @@ public class UnitWeapon : MonoBehaviour
     {
         if (isShooting == false)
         {
-            Invoke("Fire", Stats.aimTime);
+            if (isFiring == false)
+            {
+                StartCoroutine(Fire());
+            }
             isShooting = true;
         }
     }
 
-    protected virtual void Fire()
+    protected IEnumerator Fire()
     {
+        isFiring = true;
+
+        if(targetUnit == null || unit.isDead) 
+        {
+            yield break;
+        }
+
+        yield return new WaitForSeconds(stats.aimTime);
+
         if (isLoading == false)
         {
             if (isShooting == true)
@@ -214,59 +239,73 @@ public class UnitWeapon : MonoBehaviour
                 }
             }
         }
+
+        isFiring = false;
     }
 
     protected virtual void Load()
     {
-        isLoading = true;
-
-        if (ammoReadyRack > 0)
+        if (isLoading == false)
         {
-            Invoke("Loaded", 60f / (float)Stats.roundsPerMinute);
-            ammoReadyRack -= 1;
-            return;
-        }
-
-        if(ammoHalfReadyRack > 0)
-        {
-            Invoke("Loaded", 60f / ((float)Stats.roundsPerMinute / 2));
-            ammoHalfReadyRack -= 1;
-            return;
-        }
-
-        if (ammoCount > 0)
-        {
-            if (Stats.readyRack == 0)
+            if (ammoReadyRack > 0)
             {
-                Invoke("Loaded", 60f / (float)Stats.roundsPerMinute);
-                ammoCount -= 1;
+                StartCoroutine(Loaded(60f / (float)Stats.roundsPerMinute));
+                ammoReadyRack -= 1;
                 return;
             }
 
-            Invoke("Loaded", 60f / ((float)Stats.roundsPerMinute / 4));
-            ammoCount -= 1;
-            return;
+            if (ammoHalfReadyRack > 0)
+            {
+                StartCoroutine(Loaded(60f / ((float)Stats.roundsPerMinute / 2)));
+                ammoHalfReadyRack -= 1;
+                return;
+            }
+
+            if (ammoCount > 0)
+            {
+                if (Stats.readyRack == 0)
+                {
+                    StartCoroutine(Loaded(60f / (float)Stats.roundsPerMinute));
+                    ammoCount -= 1;
+                    return;
+                }
+
+                StartCoroutine(Loaded(60f / ((float)Stats.roundsPerMinute / 4)));
+                ammoCount -= 1;
+                return;
+            }
         }
     }
 
-    private void Loaded()
+    protected IEnumerator Loaded(float delay)
     {
+        isLoading = true;
+        Debug.Log(delay);
+
+        yield return new WaitForSeconds(delay);
+
         isLoading = false;
+
         if(isShooting == true)
         {
             if ((limitedAmmo == true || unit.LimitAmmoUse == true) && firedAmmo != null)
             {
-                return;
+                yield break;
             }
 
-            Invoke("Fire", Stats.aimTime);
+            if (isFiring == false)
+            {
+                StartCoroutine(Fire());
+            }
         }
     }
 
     protected IEnumerator StockRacks()
     {
-        while(ammoReadyRack < Stats.readyRack && ammoHalfReadyRack < Stats.halfReadyRack)
+        //Debug.Log("Stocking Racks");
+        while(ammoReadyRack < Stats.readyRack || ammoHalfReadyRack < Stats.halfReadyRack)
         {
+            //Debug.Log("Checking Ammo");
             if (ammoCount > 0)
             {
                 yield return new WaitForSeconds(60f / ((float)Stats.rackRoundsPerMinute / 2));
@@ -293,6 +332,7 @@ public class UnitWeapon : MonoBehaviour
                 ammoHalfReadyRack -= 1;
             }
         }
+        //Debug.Log("Stocked Racks to Full?");
     }
 
     private bool CheckAmmo()
@@ -320,14 +360,20 @@ public class UnitWeapon : MonoBehaviour
         {
             if(isLoading == false)
             {
-                Invoke("Fire", Stats.aimTime);
+                if (isFiring == false)
+                {
+                    StartCoroutine(Fire());
+                }
             }
         }
     }
 
     public void Die()
     {
-        CancelInvoke("Fire");
+        if (isFiring)
+        {
+            StopCoroutine(Fire());
+        }
         isShooting = false;
         targetUnit = null;
         target = null;

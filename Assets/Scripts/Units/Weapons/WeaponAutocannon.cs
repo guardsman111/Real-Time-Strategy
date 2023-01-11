@@ -18,23 +18,25 @@ public class WeaponAutocannon : UnitWeapon
     {
         if (magazineFill > 0)
         {
-            isLoading = true;
-            Invoke("Loaded", 60f / (float)Stats.roundsPerMinute);
-            magazineFill -= 1;
-            return;
+            if (isLoading == false)
+            {
+                StartCoroutine(Loaded(60f / (float)Stats.roundsPerMinute));
+                magazineFill -= 1;
+                return;
+            }
         }
 
         if (ammoReadyRack > 0)
         {
             ammoReadyRack -= 1;
-            Invoke("MagazineLoad", magazineReloadTime);
+            StartCoroutine(MagazineLoad(60f / magazineReloadTime));
             return;
         }
 
         if (ammoHalfReadyRack > 0)
         {
             ammoHalfReadyRack -= 1;
-            Invoke("MagazineLoad", magazineReloadTime / 2);
+            StartCoroutine(MagazineLoad(60f / (magazineReloadTime / 2)));
             return;
         }
 
@@ -42,20 +44,22 @@ public class WeaponAutocannon : UnitWeapon
         {
             if (Stats.readyRack == 0)
             {
-                Invoke("MagazineLoad", magazineReloadTime);
+                StartCoroutine(MagazineLoad(60f / magazineReloadTime));
                 ammoCount -= 1;
                 return;
             }
 
-            Invoke("MagazineLoad", magazineReloadTime / 4);
+            StartCoroutine(MagazineLoad(60f / (magazineReloadTime / 4)));
             ammoCount -= 1;
         }
 
         Debug.Log("Out of ammo so cannot load");
     }
 
-    private void MagazineLoad()
+    private IEnumerator MagazineLoad(float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         magazineFill = magazineSize;
         Load();
     }
