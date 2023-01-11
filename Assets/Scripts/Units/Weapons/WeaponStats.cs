@@ -8,7 +8,10 @@ public class WeaponStats
 {
     public int range;
     public int rotationSpeed;
-    public int ammo;
+    public int ammoTotal;
+    public int readyRack;
+    public int halfReadyRack;
+    public int rackRoundsPerMinute;
     public int ammoSpeed;
     public int roundsPerMinute;
     public int aimTime;
