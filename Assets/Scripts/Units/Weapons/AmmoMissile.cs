@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponMissile : AmmoPiece
+public class AmmoMissile : AmmoPiece
 {
     [SerializeField] private int loseLockChance;
 
@@ -22,9 +22,9 @@ public class WeaponMissile : AmmoPiece
         {
             startTimer = Time.realtimeSinceStartup;
 
-            maxTimer = Vector3.Distance(nFiredPoint, nTarget.transform.position) / speed;
+            float lossTime = Vector3.Distance(nFiredPoint, nTarget.transform.position) / speed;
 
-            lockedLossTime = Random.Range(0, maxTimer);
+            lockedLossTime = Random.Range(0, lossTime);
 
             Debug.Log($"Locked loss time is {lockedLossTime} seconds after launch, with max range of {maxTimer}");
         }
@@ -46,9 +46,18 @@ public class WeaponMissile : AmmoPiece
             return;
         }
 
-        if (Time.realtimeSinceStartup - startTimer > maxTimer)
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 1f))
         {
-            Invoke("KillAmmo", 0.0f);
+            Invoke("KillAmmo", 0.25f);
+            GetComponent<MeshRenderer>().enabled = false;
+            spent = true;
+
+            if (hit.collider.tag == "Collider")
+            {
+                hit.collider.GetComponent<UnitCollider>().Unit.RegisterHit(this, hit);
+            }
         }
 
         float randomX = Random.Range(0, 100);
@@ -60,21 +69,6 @@ public class WeaponMissile : AmmoPiece
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, manouverability * Time.deltaTime);
 
         transform.position += (transform.forward * speed * Time.deltaTime);
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 1f))
-        {
-            Invoke("KillAmmo", 0.25f);
-            GetComponent<MeshRenderer>().enabled = false;
-            speed = 0;
-            spent = true;
-
-            if (hit.collider.tag == "Collider")
-            {
-                hit.collider.GetComponent<UnitCollider>().Unit.RegisterHit(this, hit);
-            }
-        }
     }
 
     private bool CheckLoseLock()

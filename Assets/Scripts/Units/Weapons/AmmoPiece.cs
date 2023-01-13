@@ -21,7 +21,7 @@ public class AmmoPiece : MonoBehaviour
 
     private UnitObject shooter;
     private UnitWeapon weapon;
-    private UnitObject target;
+    protected UnitObject target;
 
     [SerializeField] private GameObject impactEffect;
 
@@ -68,13 +68,15 @@ public class AmmoPiece : MonoBehaviour
                 speed = 0;
                 spent = true;
 
+                actualPenetration = maxPenetration;
+
                 if (kineticPenetrator == true)
                 {
                     float distanceOfShot = Vector3.Distance(transform.position, shooter.transform.position);
 
                     actualPenetration = maxPenetration * (1 - Mathf.Clamp((distanceOfShot / range), 0, 0.5f));
 
-                    Debug.Log("penetration = " + actualPenetration + " distance of shot = " + distanceOfShot);
+                    //Debug.Log("penetration = " + actualPenetration + " distance of shot = " + distanceOfShot);
                 }
 
                 if (hit.collider.tag == "Collider")
@@ -91,6 +93,21 @@ public class AmmoPiece : MonoBehaviour
         }
     }
 
+    public UnitObject GetTarget()
+    {
+        return target;
+    }
+
+    public void SetTarget(UnitObject newTarget)
+    {
+        target = newTarget;
+    }
+
+    public void SetWillHit(bool newWillHit)
+    {
+        willHit = newWillHit;
+    }
+
     private void KillAmmo()
     {
         if(shooter.LimitAmmoUse == true)
@@ -103,7 +120,7 @@ public class AmmoPiece : MonoBehaviour
             weapon.RemoveShot();
         }
 
-        Destroy(this.gameObject);
+        Destroy(this.gameObject); // Maybe make this go physics and slowly lower speed til it hits the ground?
     }
 
     private void SpawnImpact(RaycastHit hitInfo)

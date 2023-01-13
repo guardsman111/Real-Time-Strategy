@@ -158,8 +158,7 @@ public class UnitObject : MonoBehaviour
             enemiesSpotting.Add(spottingUnit);
         }
     }
-
-
+    
     public void EnableMesh()
     {
         model.SetActive(true);
