@@ -21,14 +21,19 @@ public class WeaponMissileIlluminator : UnitWeapon
             firedAmmo.SetWillHit(false);
         }
 
-        if (unit.isDead == true)
-        {
-            firedAmmo.SetWillHit(false);
-        }
-
         if (targetUnit != firedAmmo.GetTarget())
         {
             firedAmmo.SetTarget(targetUnit);
         }
+    }
+
+    public override void Die()
+    {
+        if (firedAmmo != null)
+        {
+            firedAmmo.SetWillHit(false);
+        }
+
+        base.Die();
     }
 }

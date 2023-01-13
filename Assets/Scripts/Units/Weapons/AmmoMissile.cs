@@ -8,6 +8,8 @@ public class AmmoMissile : AmmoPiece
 
     [SerializeField] private float lockedLossTime;
 
+    float randomX, randomY, randomZ;
+
     private void Start()
     {
     }
@@ -30,17 +32,24 @@ public class AmmoMissile : AmmoPiece
         }
 
         maxTimer = range / speed;
+
+        StartCoroutine(GenerateRandomDirection());
     }
 
     private new void Update()
     {
-        if (willHit == true)
+        if (willHit == true && target != null)
         {
             base.Update();
             return;
         }
 
-        if(Time.realtimeSinceStartup - startTimer < lockedLossTime)
+        if ((Time.realtimeSinceStartup - startTimer) > maxTimer)
+        {
+            Invoke("KillAmmo", 0.0f);
+        }
+
+        if (Time.realtimeSinceStartup - startTimer < lockedLossTime)
         {
             base.Update();
             return;
@@ -60,11 +69,7 @@ public class AmmoMissile : AmmoPiece
             }
         }
 
-        float randomX = Random.Range(0, 100);
-        float randomY = Random.Range(0, 100);
-        float randomZ = Random.Range(0, 100);
-
-        Vector3 direction = (new Vector3(randomX, randomY, randomZ) - transform.position).normalized;
+        Vector3 direction = new Vector3(randomX, randomY, randomZ);
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, manouverability * Time.deltaTime);
 
@@ -81,5 +86,24 @@ public class AmmoMissile : AmmoPiece
         }
 
         return true;
+    }
+
+    private IEnumerator GenerateRandomDirection()
+    {
+        while (spent == false)
+        {
+            yield return new WaitForSeconds(0.5f);
+
+            randomX = Random.Range(-360, 360);
+            randomY = Random.Range(-360, 360);
+            randomZ = Random.Range(-360, 360);
+        }
+    }
+
+    public override void KillAmmo()
+    {
+        StopCoroutine(GenerateRandomDirection());
+
+        base.KillAmmo();
     }
 }

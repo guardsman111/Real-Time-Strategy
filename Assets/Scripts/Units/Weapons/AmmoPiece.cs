@@ -108,7 +108,7 @@ public class AmmoPiece : MonoBehaviour
         willHit = newWillHit;
     }
 
-    private void KillAmmo()
+    public virtual void KillAmmo()
     {
         if(shooter.LimitAmmoUse == true)
         {

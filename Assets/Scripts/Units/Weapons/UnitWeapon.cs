@@ -367,12 +367,13 @@ public class UnitWeapon : MonoBehaviour
         }
     }
 
-    public void Die()
+    public virtual void Die()
     {
         if (isFiring)
         {
             StopCoroutine(TryFire());
         }
+
         isShooting = false;
         targetUnit = null;
         target = null;

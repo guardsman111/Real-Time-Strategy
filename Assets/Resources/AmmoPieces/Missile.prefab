@@ -66,7 +66,7 @@ MonoBehaviour:
   kineticPenetrator: 0
   tracking: 1
   impactEffect: {fileID: 7324146200123359535, guid: c084b0d4eb31ea441995594b1e331a18, type: 3}
-  loseLockChance: 20
+  loseLockChance: 100
   lockedLossTime: 0
 --- !u!23 &502584332862697741
 MeshRenderer:
