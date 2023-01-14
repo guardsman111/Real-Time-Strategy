@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1635551124736625250}
   - component: {fileID: 2386202467406038471}
-  - component: {fileID: 6859698183844647457}
+  - component: {fileID: 7775664000265327203}
   - component: {fileID: 502584332862697741}
   - component: {fileID: 3165717883680850471}
   m_Layer: 0
-  m_Name: Missile
+  m_Name: Illuminated Missile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2159886935934013656}
   m_Mesh: {fileID: 4300000, guid: 1d057797d05a5224888c848ea297e96d, type: 3}
---- !u!114 &6859698183844647457
+--- !u!114 &7775664000265327203
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,20 +54,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2159886935934013656}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed3859146e0c5b64dad2cca8179b19d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 68c4e1b73643e0c4fa55b594010c92cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 50
-  speed: 5
-  manouverability: 15
+  range: 0
+  speed: 0
+  manouverability: 30
   damage: 50
   actualPenetration: 0
   maxPenetration: 600
   kineticPenetrator: 0
   tracking: 1
   impactEffect: {fileID: 7324146200123359535, guid: c084b0d4eb31ea441995594b1e331a18, type: 3}
-  loseLockChance: 100
-  lockedLossTime: 0
 --- !u!23 &502584332862697741
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -88,7 +86,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 55ab79fa0dcc59b4b9bd2d2b2b921672, type: 2}
+  - {fileID: 2100000, guid: ea909443c19deff4a9f4e6e066c8c9a6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

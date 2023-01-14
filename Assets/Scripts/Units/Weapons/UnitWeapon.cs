@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnitWeapon : MonoBehaviour
 {
-    [SerializeField] private UnitObject unit;
+    [SerializeField] protected UnitObject unit;
 
     [SerializeField] private WeaponStats stats;
     public WeaponStats Stats { get => stats; }
@@ -14,12 +14,13 @@ public class UnitWeapon : MonoBehaviour
     [SerializeField] private Transform gunHome;
     [SerializeField] private Transform muzzel;
     [SerializeField] private ParticleSystem flash;
+    [SerializeField] private ParticleSystem dust;
     [SerializeField] protected AmmoPiece firedAmmo;
 
     [SerializeField] private Transform target;
     [SerializeField] private Vector3 previousTargetPosition;
     [SerializeField] private Transform predictedTargetPosition;
-    private UnitObject targetUnit;
+    protected UnitObject targetUnit;
     public UnitObject TargetUnit { get => targetUnit; }
     private bool isShooting, isFiring;
 
@@ -29,7 +30,7 @@ public class UnitWeapon : MonoBehaviour
 
     [SerializeField] private bool limitedAmmo = true;
     public bool LimitedAmmo { get => limitedAmmo; }
-    protected bool isLoading;
+    [SerializeField] protected bool isLoading;
     private Coroutine stockRacks;
 
     protected virtual void Start()
@@ -71,7 +72,7 @@ public class UnitWeapon : MonoBehaviour
                     {
                         if (isFiring)
                         {
-                            StopCoroutine(Fire());
+                            StopCoroutine(TryFire());
                         }
                         isShooting = false;
                     }
@@ -80,7 +81,7 @@ public class UnitWeapon : MonoBehaviour
 
                 if (isFiring)
                 {
-                    StopCoroutine(Fire());
+                    StopCoroutine(TryFire());
                 }
                 isShooting = false;
                 return;
@@ -88,7 +89,7 @@ public class UnitWeapon : MonoBehaviour
 
             if (isFiring)
             {
-                StopCoroutine(Fire());
+                StopCoroutine(TryFire());
             }
 
             Quaternion targetRotation = Quaternion.LookRotation(unit.transform.forward);
@@ -172,6 +173,9 @@ public class UnitWeapon : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
         gunHome.rotation = Quaternion.RotateTowards(gunHome.rotation, targetRotation, Stats.rotationSpeed * Time.deltaTime);
         gunHome.localEulerAngles = new Vector3(gunHome.localRotation.eulerAngles.x, 0, 0);
+
+        ParticleSystem.ShapeModule flashShape = flash.shape;
+        flashShape.rotation = new Vector3(flashShape.rotation.x, gunHome.rotation.eulerAngles.y, gunHome.rotation.eulerAngles.z);
     }
 
     public void ChangeTarget(UnitObject nTarget)
@@ -201,13 +205,13 @@ public class UnitWeapon : MonoBehaviour
         {
             if (isFiring == false)
             {
-                StartCoroutine(Fire());
+                StartCoroutine(TryFire());
             }
             isShooting = true;
         }
     }
 
-    protected IEnumerator Fire()
+    protected IEnumerator TryFire()
     {
         isFiring = true;
 
@@ -247,6 +251,8 @@ public class UnitWeapon : MonoBehaviour
     {
         if (isLoading == false)
         {
+            isLoading = true;
+
             if (ammoReadyRack > 0)
             {
                 StartCoroutine(Loaded(60f / (float)Stats.roundsPerMinute));
@@ -274,20 +280,19 @@ public class UnitWeapon : MonoBehaviour
                 ammoCount -= 1;
                 return;
             }
+
+            isLoading = false;
         }
     }
 
     protected IEnumerator Loaded(float delay)
     {
-        isLoading = true;
-        Debug.Log(delay);
-
         yield return new WaitForSeconds(delay);
-
-        isLoading = false;
 
         if(isShooting == true)
         {
+            isLoading = false;
+
             if ((limitedAmmo == true || unit.LimitAmmoUse == true) && firedAmmo != null)
             {
                 yield break;
@@ -295,7 +300,7 @@ public class UnitWeapon : MonoBehaviour
 
             if (isFiring == false)
             {
-                StartCoroutine(Fire());
+                StartCoroutine(TryFire());
             }
         }
     }
@@ -356,24 +361,19 @@ public class UnitWeapon : MonoBehaviour
     public virtual void RemoveShot()
     {
         firedAmmo = null;
-        if (isShooting == true)
+        if (isShooting == true && isLoading == false && isFiring == false && ammoCount != 0)
         {
-            if(isLoading == false)
-            {
-                if (isFiring == false)
-                {
-                    StartCoroutine(Fire());
-                }
-            }
+            StartCoroutine(TryFire());
         }
     }
 
-    public void Die()
+    public virtual void Die()
     {
         if (isFiring)
         {
-            StopCoroutine(Fire());
+            StopCoroutine(TryFire());
         }
+
         isShooting = false;
         targetUnit = null;
         target = null;

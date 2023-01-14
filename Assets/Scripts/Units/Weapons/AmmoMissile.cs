@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponMissile : AmmoPiece
+public class AmmoMissile : AmmoPiece
 {
     [SerializeField] private int loseLockChance;
 
     [SerializeField] private float lockedLossTime;
+
+    float randomX, randomY, randomZ;
 
     private void Start()
     {
@@ -22,44 +24,36 @@ public class WeaponMissile : AmmoPiece
         {
             startTimer = Time.realtimeSinceStartup;
 
-            maxTimer = Vector3.Distance(nFiredPoint, nTarget.transform.position) / speed;
+            float lossTime = Vector3.Distance(nFiredPoint, nTarget.transform.position) / speed;
 
-            lockedLossTime = Random.Range(0, maxTimer);
+            lockedLossTime = Random.Range(0, lossTime);
 
             Debug.Log($"Locked loss time is {lockedLossTime} seconds after launch, with max range of {maxTimer}");
         }
 
         maxTimer = range / speed;
+
+        StartCoroutine(GenerateRandomDirection());
     }
 
     private new void Update()
     {
-        if (willHit == true)
+        if (willHit == true && target != null)
         {
             base.Update();
             return;
         }
 
-        if(Time.realtimeSinceStartup - startTimer < lockedLossTime)
-        {
-            base.Update();
-            return;
-        }
-
-        if (Time.realtimeSinceStartup - startTimer > maxTimer)
+        if ((Time.realtimeSinceStartup - startTimer) > maxTimer)
         {
             Invoke("KillAmmo", 0.0f);
         }
 
-        float randomX = Random.Range(0, 100);
-        float randomY = Random.Range(0, 100);
-        float randomZ = Random.Range(0, 100);
-
-        Vector3 direction = (new Vector3(randomX, randomY, randomZ) - transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, manouverability * Time.deltaTime);
-
-        transform.position += (transform.forward * speed * Time.deltaTime);
+        if (Time.realtimeSinceStartup - startTimer < lockedLossTime)
+        {
+            base.Update();
+            return;
+        }
 
         RaycastHit hit;
 
@@ -67,7 +61,6 @@ public class WeaponMissile : AmmoPiece
         {
             Invoke("KillAmmo", 0.25f);
             GetComponent<MeshRenderer>().enabled = false;
-            speed = 0;
             spent = true;
 
             if (hit.collider.tag == "Collider")
@@ -75,6 +68,12 @@ public class WeaponMissile : AmmoPiece
                 hit.collider.GetComponent<UnitCollider>().Unit.RegisterHit(this, hit);
             }
         }
+
+        Vector3 direction = new Vector3(randomX, randomY, randomZ);
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, manouverability * Time.deltaTime);
+
+        transform.position += (transform.forward * speed * Time.deltaTime);
     }
 
     private bool CheckLoseLock()
@@ -87,5 +86,24 @@ public class WeaponMissile : AmmoPiece
         }
 
         return true;
+    }
+
+    private IEnumerator GenerateRandomDirection()
+    {
+        while (spent == false)
+        {
+            yield return new WaitForSeconds(0.5f);
+
+            randomX = Random.Range(-360, 360);
+            randomY = Random.Range(-360, 360);
+            randomZ = Random.Range(-360, 360);
+        }
+    }
+
+    public override void KillAmmo()
+    {
+        StopCoroutine(GenerateRandomDirection());
+
+        base.KillAmmo();
     }
 }
