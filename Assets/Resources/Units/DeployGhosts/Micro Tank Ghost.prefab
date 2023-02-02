@@ -1118,7 +1118,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5848560814057457000}
-  - component: {fileID: 524225957617652626}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Collider
@@ -1142,19 +1141,6 @@ Transform:
   m_Father: {fileID: 4259411927220786435}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &524225957617652626
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8482374473033210200}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.77999985, y: 0.86860996, z: 1.44}
-  m_Center: {x: -0.03999999, y: 0.3789249, z: 0}
 --- !u!1 &8940155001456391481
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,6 +1150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4259411927220786435}
+  - component: {fileID: 2918518402608871032}
   m_Layer: 0
   m_Name: Micro Tank Ghost
   m_TagString: Untagged
@@ -1188,6 +1175,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2918518402608871032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8940155001456391481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e82bb7e4383e094c97851a3d2ecac67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unit: {fileID: 5878675316383862020, guid: d3ac8d4da7f1ae2428155c6f56b51c9c, type: 3}
 --- !u!1 &9135788307243364625
 GameObject:
   m_ObjectHideFlags: 0

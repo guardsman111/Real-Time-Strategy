@@ -37,8 +37,23 @@ public class UnitObject : MonoBehaviour
 
     [SerializeField] private LayerMask TerrainLayerMask;
 
+    public Vector3 targetLocation;
+
     private void Start()
     {
+        if(manager != null)
+        {
+            Initialize();
+        }
+    }
+
+    public void Initialize(UnitManager newManager = null)
+    {
+        if (newManager != null)
+        {
+            manager = newManager;
+        }
+
         ID = Random.Range(0, 100000);
         if (isPlayer)
         {
@@ -69,11 +84,19 @@ public class UnitObject : MonoBehaviour
             stats.currentHealth = stats.health;
         }
 
-        manager.AddUnit(this, isPlayer);
+        if (newManager == null)
+        {
+            manager.AddUnit(this, isPlayer);
+        }
+
+        if(targetLocation == null || targetLocation == Vector3.zero)
+        {
+            Debug.Log("Position set init");
+            pather.destination = transform.position;
+            targetLocation = transform.position;
+        }
 
         InvokeRepeating("Scan", 1f, 1f);
-
-        pather.destination = transform.position;
     }
 
     protected virtual void Update()
@@ -284,7 +307,9 @@ public class UnitObject : MonoBehaviour
 
     public virtual void SetTargetLocation(Vector3 target)
     {
+        Debug.Log("Position set");
         pather.destination = target;
+        targetLocation = target;
     }
 
     public void AngleUnitToFloor()
@@ -313,5 +338,10 @@ public class UnitObject : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Stats.traverseSpeed * Time.deltaTime);
             transform.localEulerAngles = new Vector3(0, transform.localRotation.eulerAngles.y, 0);
         }
+    }
+
+    public void SetPlayer(bool value)
+    {
+        isPlayer = value;
     }
 }

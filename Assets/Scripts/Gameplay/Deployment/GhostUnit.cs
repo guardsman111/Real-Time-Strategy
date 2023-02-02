@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GhostUnit : MonoBehaviour
 {
-    private Transform target;
+    [SerializeField] private GameObject unit;
+    public GameObject UnitPrefab { get => unit; }
 
     // Start is called before the first frame update
     void Start()
