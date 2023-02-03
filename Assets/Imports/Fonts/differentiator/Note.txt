@@ -1,0 +1,8 @@
+Dear user,
+
+Be aware that font files in this folder are made for different keyboard settings. If you want to use diacritics, please intall font file with "1250_Central_European" suffix. If You are regular english user, please install font file with "1252_Wester" suffix. 
+
+Feel free to use and modify font anyway You like. 
+
+
+Enjoy. :)

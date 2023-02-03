@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -224,5 +225,12 @@ public class UnitManager : MonoBehaviour
         RaycastHit[] newHits = hits.ToList<RaycastHit>().OrderBy(x => x.distance).ToArray();
 
         return newHits;
+    }
+
+    internal void SpawnPlayerNewUnit(UnitObject unit)
+    {
+        unit.SetPlayer(true);
+
+        AddUnit(unit, true);
     }
 }
