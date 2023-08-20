@@ -39,7 +39,7 @@ public class UnitObject : MonoBehaviour
 
     public Vector3 targetLocation;
 
-    private void Start()
+    protected virtual void Start()
     {
         if(manager != null)
         {
@@ -47,7 +47,7 @@ public class UnitObject : MonoBehaviour
         }
     }
 
-    public void Initialize(UnitManager newManager = null)
+    public virtual void Initialize(UnitManager newManager = null)
     {
         if (newManager != null)
         {

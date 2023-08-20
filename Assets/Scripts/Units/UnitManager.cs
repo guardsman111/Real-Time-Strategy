@@ -34,6 +34,9 @@ public class UnitManager : MonoBehaviour
         private set { value = hostileVisibleUnits; }
     }
 
+    private GameObject particleManagerPrefab;
+    public GameObject ParticleManagerPrefab { get => particleManagerPrefab; }
+
     [SerializeField] private LayerMask hostileLayer;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask terrainLayer;
