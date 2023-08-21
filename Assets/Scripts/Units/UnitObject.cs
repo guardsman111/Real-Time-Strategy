@@ -78,11 +78,7 @@ public class UnitObject : MonoBehaviour
         pather.maxSpeed = stats.driveSpeed;
         pather.maxAcceleration = stats.driveAcceleration;
         pather.rotationSpeed = stats.traverseSpeed;
-
-        if (stats.currentHealth > 0)
-        {
-            stats.currentHealth = stats.health;
-        }
+        stats.currentHealth = stats.health;
 
         if (newManager == null)
         {
@@ -91,7 +87,7 @@ public class UnitObject : MonoBehaviour
 
         if(targetLocation == null || targetLocation == Vector3.zero)
         {
-            Debug.Log("Position set init");
+            //Debug.Log("Position set init");
             pather.destination = transform.position;
             targetLocation = transform.position;
         }
@@ -307,7 +303,7 @@ public class UnitObject : MonoBehaviour
 
     public virtual void SetTargetLocation(Vector3 target)
     {
-        Debug.Log("Position set");
+        //Debug.Log("Position set");
         pather.destination = target;
         targetLocation = target;
     }

@@ -1,25 +1,40 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
+
+[Serializable]
+public class ParticleTypePair
+{
+    public ParticleType type;
+    public ParticleEffector particleEffector;
+}
 
 public class ParticleManager : MonoBehaviour
 {
-    [SerializeField] private List<ParticleSystem> particleSystems;
-    private int intValue;
+    [SerializeField] private List<ParticleTypePair> particleSystems = new();
+    private ParticleType terrainType;
 
-    private void Start()
+    public ParticleEffector currentParticleSystems { get; private set; }
+
+    public void Initialize(ParticleType newType)
     {
-        if (particleSystems.Count < intValue)
-        {
-            particleSystems[intValue].Play();
-        }
-        else
-        {
-            Debug.LogError("ParticleManager: intValue is out of range of particleSystems list");
-        }
+        SetTypeValue(newType);
     }
 
-    public void SetIntValue(int newValue)
+    private void SetTypeValue(ParticleType newType)
     {
-        intValue = newValue;
+        terrainType = newType;
+        
+        foreach(ParticleTypePair pair in particleSystems)
+        {
+            if(pair.type == terrainType)
+            {
+                currentParticleSystems = pair.particleEffector;
+                return;
+            }
+        } 
+
+        Debug.LogError("ParticleManager: terrainType does not exist in dictionary");
     }
 }

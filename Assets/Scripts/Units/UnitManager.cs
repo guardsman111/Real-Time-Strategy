@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Enums;
 
 public class UnitManager : MonoBehaviour
 {
@@ -34,12 +36,20 @@ public class UnitManager : MonoBehaviour
         private set { value = hostileVisibleUnits; }
     }
 
-    private GameObject particleManagerPrefab;
-    public GameObject ParticleManagerPrefab { get => particleManagerPrefab; }
+    public ParticleManager ParticleManagerPrefab;
+    public GameObject ExplosionPrefab;
+    public ParticleType TerrainType;
 
     [SerializeField] private LayerMask hostileLayer;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask terrainLayer;
+
+    private void Start()
+    {
+        ParticleManagerPrefab = Resources.Load<GameObject>("Effects/ParticleManager").GetComponent<ParticleManager>();
+        ExplosionPrefab = Resources.Load<GameObject>("Effects/Explosion");
+        ParticleManagerPrefab.Initialize(TerrainType);
+    }
 
     public void AddUnit(UnitObject unit, bool isPlayer)
     {
@@ -146,7 +156,7 @@ public class UnitManager : MonoBehaviour
 
         if (closestID == -1)
         {
-            //Debug.LogError("Error finding visible enemy - returned no enemy");
+            Debug.LogError("Error finding visible enemy - returned no enemy");
             return null;
         }
 

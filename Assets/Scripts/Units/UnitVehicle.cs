@@ -44,8 +44,13 @@ public class UnitVehicle : UnitObject
     public override void TakeDamage(int damage)
     {
         // Check if the unit explodes, if not, do normal health check
-        if (damage / Stats.toughness >= 10)
+        if (damage >= Stats.currentHealth || damage >= Stats.toughness * 3)
         {
+            int rand = Random.Range(0, 100);
+            if (rand >= 25)
+            {
+                return;
+            }
             Stats.currentHealth = 0;
             Explode();
             return;
@@ -73,10 +78,17 @@ public class UnitVehicle : UnitObject
             }
         }
 
-        foreach(ParticleSystem system in Fires)
+        foreach(ParticleSystem fire in Fires)
         {
-            system.gameObject.SetActive(true);
-            system.Play();
+            fire.gameObject.SetActive(true);
+            fire.Play();
+        }
+
+        GameObject explosion = Instantiate(manager.ExplosionPrefab, transform.position, Quaternion.identity);
+        ParticleSystem system = explosion.GetComponent<ParticleSystem>();
+        foreach(ParticleSystem subSystem in system.GetComponentsInChildren<ParticleSystem>())
+        {
+            subSystem.Play();
         }
 
         Die();

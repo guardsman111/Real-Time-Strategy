@@ -58,10 +58,10 @@ public class UnitWeapon : MonoBehaviour
 
                 RotateGun();
 
-                Vector3 targetDirection = target.position - transform.position;
+                Vector3 targetDirection = previousTargetPosition - transform.position;
                 float angle1 = Vector3.Angle(targetDirection, transform.forward);
 
-                if (angle1 <= 5)
+                if (angle1 <= 45)
                 {
                     if (Vector3.Distance(transform.position, target.position) < Stats.range && isShooting == false && unit.isDead == false)
                     {
@@ -102,9 +102,6 @@ public class UnitWeapon : MonoBehaviour
 
     private void RotateTurret()
     {
-        Vector3 targetPos = target.transform.position;
-        targetPos.y = transform.position.y;
-        Vector3 targetDirection = (targetPos - transform.position).normalized;
         Vector3 predictedPosition = CalculatePredictedPosition();
         predictedPosition.y = transform.position.y;
 
@@ -113,9 +110,12 @@ public class UnitWeapon : MonoBehaviour
             previousTargetPosition = target.position;
             return;
         }
+
+        Vector3 targetDirection = predictedPosition - transform.position;
+        targetDirection.y = 0;
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Stats.rotationSpeed * Time.deltaTime);
-        transform.localEulerAngles = new Vector3(0, transform.localRotation.eulerAngles.y, 0);
+        //transform.localEulerAngles = new Vector3(0, transform.localRotation.eulerAngles.y, 0);
 
         previousTargetPosition = target.position;
         if (predictedTargetPosition != null)
@@ -126,56 +126,34 @@ public class UnitWeapon : MonoBehaviour
 
     private Vector3 CalculatePredictedPosition()
     {
-        //Pbi (muzzel position) + Vb (bullet velocity) * t = Pti (targetPosition) + Vti (tareget velocity) * t + 0.5 * At (target acceleration) * (t * t)
-
         if(previousTargetPosition == null)
         {
             previousTargetPosition = target.position;
-            return Vector3.zero;
+            return target.position;
         }
 
-        Vector3 positionProjection = transform.forward * Stats.ammoSpeed * Time.deltaTime;
+        Vector3 targetVelocity = (target.position - previousTargetPosition) / Time.deltaTime;
+        previousTargetPosition = target.position;
 
-        float Vb = ((positionProjection - (muzzel.position)).magnitude * Time.deltaTime);
-        float Vti = (target.position - previousTargetPosition).sqrMagnitude * Time.deltaTime;
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        float timeToReachTarget = distanceToTarget / stats.ammoSpeed;
 
-        Vector3 targetDir = target.position - transform.position;
-        float iSpeed2 = Vb * Vb;
-        float tSpeed2 = Vti * Vti;
-        float fDot1 = Vector3.Dot(targetDir, (target.position - previousTargetPosition));
-        float targetDist2 = targetDir.sqrMagnitude;
-        float d = (fDot1 * fDot1) - targetDist2 * (tSpeed2 - iSpeed2);
-        if (d < 0.1f)  // negative == no possible course because the interceptor isn't fast enough
-            return Vector3.zero;
-        float sqrt = Mathf.Sqrt(d);
-        float S1 = (-fDot1 - sqrt) / targetDist2;
-        float S2 = (-fDot1 + sqrt) / targetDist2;
-        if (S1 < 0.0001f)
-        {
-            if (S2 < 0.0001f)
-                return Vector3.zero;
-            else
-                return (S2) * targetDir + (target.position - previousTargetPosition);
-        }
-        else if (S2 < 0.0001f)
-            return (S1) * targetDir + (target.position - previousTargetPosition);
-        else if (S1 < S2)
-            return (S2) * targetDir + (target.position - previousTargetPosition);
-        else
-            return (S1) * targetDir + (target.position - previousTargetPosition);
+        Vector3 futurePosition = target.position + targetVelocity * timeToReachTarget;
+
+        return futurePosition;
     }
 
     private void RotateGun()
     {
-        Quaternion previousRotation = transform.rotation;
-        Vector3 targetPos = new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z);
-        Vector3 targetDirection = (target.transform.position - gunHome.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-        gunHome.rotation = Quaternion.RotateTowards(gunHome.rotation, targetRotation, Stats.rotationSpeed * Time.deltaTime);
-        gunHome.localEulerAngles = new Vector3(gunHome.localRotation.eulerAngles.x, 0, 0);
+        Vector3 direction = (target.position - new Vector3(0, 1, 0)) - transform.position;
+        direction.y = 0; // Remove vertical component to ensure rotation only on the Y-axis.
 
-        ParticleSystem.ShapeModule flashShape = flash.shape;
-        flashShape.rotation = new Vector3(flashShape.rotation.x, gunHome.rotation.eulerAngles.y, gunHome.rotation.eulerAngles.z);
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        Quaternion currentRotation = gunHome.rotation;
+        currentRotation.x = 0; // Remove any existing rotation on the X-axis.
+        currentRotation.z = 0; // Remove any existing rotation on the Z-axis.
+
+        transform.rotation = Quaternion.RotateTowards(currentRotation, targetRotation, stats.rotationSpeed * Time.deltaTime);
     }
 
     public void ChangeTarget(UnitObject nTarget)
@@ -194,6 +172,7 @@ public class UnitWeapon : MonoBehaviour
                 return;
             }
 
+            Debug.Log("target lost");
             target = null;
             stockRacks = StartCoroutine(StockRacks());
         }
